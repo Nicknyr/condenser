@@ -98,8 +98,8 @@ class ReplyEditor extends React.Component {
             });
             this.setState({
                 payoutType: this.props.isStory
-                    ? localStorage.getItem('defaultPayoutType') || '50%'
-                    : '50%',
+                    ? userpref('default_blog_payout', '50%')
+                    : userpref('default_comment_payout', '50%'),
             });
         }
     }
@@ -238,13 +238,6 @@ class ReplyEditor extends React.Component {
         void draft.offsetWidth; // reset animation
         draft.className = 'ReplyEditor__draft ReplyEditor__draft-saved';
     }
-
-    onPayoutTypeChange = e => {
-        const payoutType = e.currentTarget.value;
-        this.setState({ payoutType });
-        if (payoutType !== '0%')
-            localStorage.setItem('defaultPayoutType', payoutType);
-    };
 
     onDrop = (acceptedFiles, rejectedFiles) => {
         if (!acceptedFiles.length) {
@@ -617,37 +610,17 @@ class ReplyEditor extends React.Component {
                                         {tt('g.clear')}
                                     </button>
                                 )}
-                            {isStory &&
-                                !isEdit && (
+                            {!isEdit &&
+                                this.state.payoutType != '50%' && (
                                     <div className="ReplyEditor__options float-right text-right">
                                         {tt('g.rewards')} &nbsp;
-                                        <select
-                                            value={this.state.payoutType}
-                                            onChange={this.onPayoutTypeChange}
-                                            style={{
-                                                color:
-                                                    this.state.payoutType ==
-                                                    '0%'
-                                                        ? 'orange'
-                                                        : '',
-                                            }}
-                                        >
-                                            <option value="100%">
-                                                {tt(
-                                                    'reply_editor.power_up_100'
-                                                )}
-                                            </option>
-                                            <option value="50%">
-                                                {tt(
-                                                    'reply_editor.default_50_50'
-                                                )}
-                                            </option>
-                                            <option value="0%">
-                                                {tt(
-                                                    'reply_editor.decline_payout'
-                                                )}
-                                            </option>
-                                        </select>
+                                        {this.state.payoutType == '0%' &&
+                                            tt('reply_editor.decline_payout')}
+                                        {this.state.payoutType == '100%' &&
+                                            tt('reply_editor.power_up_100')}
+                                        <Link to="/account/settings">
+                                            Adjust settings
+                                        </Link>
                                     </div>
                                 )}
                         </div>
